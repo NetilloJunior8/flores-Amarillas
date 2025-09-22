@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensaje Especial para Mamá</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #fcf8e3; /* Fondo amarillo suave */
+            position: relative;
+            overflow: hidden; /* Para que las flores no se salgan si son muy grandes */
+        }
+
+        /* Contenedor principal de la página, para simular la ventana del navegador */
+        .browser-window {
+            width: 90vw;
+            max-width: 1000px;
+            height: 70vh;
+            max-height: 700px;
+            background-color: #f0f0f0; /* Color de la "ventana" */
+            border-radius: 10px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden; /* Muy importante para que las flores caigan dentro */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Ajustado para que el contenido no esté en el centro vertical completo */
+            padding-top: 50px; /* Espacio para la barra del navegador */
+        }
+
+        /* Barra de título y navegación simulada */
+        .browser-header {
+            width: 100%;
+            height: 40px;
+            background-color: #e0e0e0;
+            border-bottom: 1px solid #ccc;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        .browser-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .browser-dot.red { background-color: #ff605c; }
+        .browser-dot.yellow { background-color: #ffbd44; }
+        .browser-dot.green { background-color: #00ca4e; }
+
+        .browser-address-bar {
+            flex-grow: 1;
+            height: 25px;
+            background-color: #fff;
+            border-radius: 5px;
+            margin-left: 15px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .content-area {
+            flex-grow: 1; /* Ocupa el espacio restante */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Centra el contenido principal */
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+
+        h1 {
+            color: #d4ac0d; /* Amarillo dorado */
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .envelope-container {
+            cursor: pointer;
+            position: relative;
+            width: 300px;
+            height: 200px;
+            margin: 0 auto;
+            transition: transform 0.3s ease;
+            perspective: 1000px; /* Para la animación 3D */
+            z-index: 10;
+        }
+
+        .envelope-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .envelope {
+            width: 100%;
+            height: 100%;
+            background-color: #f7e0b5; /* Color del sobre */
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid #d4ac0d;
+            position: relative;
+            overflow: hidden; /* Esto es crucial para que la carta salga de dentro */
+            z-index: 1;
+        }
+        
+        /* Solapa superior del sobre */
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent; /* Mitad del ancho */
+            border-right: 150px solid transparent; /* Mitad del ancho */
+            border-top: 100px solid #e0c897; /* Solapa del sobre */
+            transform-origin: top; /* Para rotar desde arriba */
+            transition: transform 0.5s ease-in-out;
+            z-index: 2;
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg); /* Abre la solapa */
+        }
+
+        .envelope-line {
+            position: absolute;
+            width: 80%;
+            height: 2px;
+            background-color: #d4ac0d;
+            border-radius: 2px;
+            left: 10%; /* Centrar */
+        }
+
+        .envelope-line.top { top: 35%; }
+        .envelope-line.middle { top: 50%; }
+        .envelope-line.bottom { top: 65%; }
+
+        .wax-seal {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: #b33939; /* Rojo del sello */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.2em;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 3;
+        }
+
+        .letter {
+            position: absolute;
+            width: 90%; /* Ajustado para que quepa bien dentro del sobre */
+            height: 90%; /* Ajustado para que quepa bien dentro del sobre */
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            /* La carta comienza dentro del sobre, en la parte inferior */
+            top: 100%; 
+            left: 50%;
+            transform: translate(-50%, 0); /* Centrar horizontalmente */
+            transition: top 0.8s ease-out, transform 0.8s ease-out; /* Transición para que suba y se escale */
+            z-index: 0; /* Por debajo del sobre */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            font-size: 1.1em;
+            color: #333;
+            box-sizing: border-box; /* Para que padding no aumente el tamaño total */
+        }
+
+        .envelope.open .letter {
+            top: -120%; /* Sube fuera del sobre, ajusta este valor si es necesario */
+            transform: translate(-50%, 0) scale(1.1); /* Ligeramente más grande al salir */
+        }
+
+        /* La carta, cuando está fuera del sobre y abierta, se centra en la pantalla */
+        body.letter-visible .letter {
+            position: fixed; /* Fija la carta en la ventana */
+            top: 50%;
+            left: 50%;
+            width: 500px; /* Ancho deseado de la carta abierta */
+            height: 350px; /* Alto deseado de la carta abierta */
+            transform: translate(-50%, -50%); /* Centra la carta */
+            z-index: 20; /* Para que quede por encima de todo al abrirse */
+            transition: all 0.5s ease-out; /* Transición suave */
+        }
+
+
+        .letter p {
+            margin: 10px 0;
+            color: #555;
+        }
+
+        .letter .signature {
+            font-weight: bold;
+            color: #d4ac0d;
+            margin-top: 20px;
+        }
+
+        .letter-flowers {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .letter-flower {
+            font-size: 1.5em;
+            color: #d4ac0d;
+        }
+
+        /* Estilos para las flores que caen */
+        .falling-flower {
+            position: absolute;
+            font-size: 2em; /* Tamaño de las flores que caen */
+            color: #d4ac0d; /* Color amarillo */
+            opacity: 0; /* Invisibles al principio */
+            animation: fall linear forwards;
+            pointer-events: none; /* No interactuar con el mouse */
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-50px) rotateZ(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(calc(100vh + 50px)) rotateZ(720deg); /* Caer más allá de la pantalla */
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="browser-window">
+        <div class="browser-header">
+            <div class="browser-dot red"></div>
+            <div class="browser-dot yellow"></div>
+            <div class="browser-dot green"></div>
+            <div class="browser-address-bar">
+                FloresParaJaquelin-LaMejorMamaDelMundo.com
+            </div>
+        </div>
+        <div class="content-area">
+            <h1>¡Tienes un mensaje especial!</h1>
+            <div class="envelope-container" onclick="toggleLetter()">
+                <div class="envelope" id="theEnvelope">
+                    <div class="envelope-flap"></div>
+                    <div class="envelope-line top"></div>
+                    <div class="envelope-line middle"></div>
+                    <div class="envelope-line bottom"></div>
+                    <div class="wax-seal">E</div>
+                    <div class="letter" id="theLetter">
+                        <div class="letter-flowers">
+                            <span class="letter-flower">🌼</span>
+                            <span class="letter-flower">🌼</span>
+                            <span class="letter-flower">🌼</span>
+                        </div>
+                        <p>Aquí están las flores amarillas virtuales</p>
+                        <p>para la mejor mamá del mundo.</p>
+                        <p class="signature">ATTE. Ernestito.</p>
+                        <div class="letter-flowers">
+                            <span class="letter-flower">🌼</span>
+                            <span class="letter-flower">🌼</span>
+                            <span class="letter-flower">🌼</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleLetter() {
+            const envelope = document.getElementById('theEnvelope');
+            const letter = document.getElementById('theLetter');
+            const body = document.body;
+
+            // Abre o cierra el sobre
+            envelope.classList.toggle('open');
+            // Muestra u oculta la carta fija en el centro
+            body.classList.toggle('letter-visible');
+
+            if (envelope.classList.contains('open')) {
+                // Si se abre el sobre, crea las flores que caen
+                createFallingFlowers();
+            } else {
+                // Si se cierra, podrías limpiar las flores o dejar que terminen de caer
+            }
+        }
+
+        function createFallingFlowers() {
+            const numberOfFlowers = 30; // Cuántas flores caerán
+            const emojis = ['🌼', '🌻', '🌸', '🏵️']; // Diferentes emojis de flores
+
+            for (let i = 0; i < numberOfFlowers; i++) {
+                const flower = document.createElement('span');
+                flower.classList.add('falling-flower');
+                flower.textContent = emojis[Math.floor(Math.random() * emojis.length)]; // Elige un emoji aleatorio
+
+                // Posición inicial aleatoria a lo largo de la parte superior de la ventana del navegador
+                flower.style.left = Math.random() * window.innerWidth + 'px';
+                // Retraso para que caigan en diferentes momentos
+                flower.style.animationDelay = Math.random() * 5 + 's'; 
+                // Duración de la animación (más largo para que caigan más lento)
+                flower.style.animationDuration = (Math.random() * 5 + 5) + 's'; 
+
+                document.body.appendChild(flower); // Añadir al body para que caigan por toda la pantalla
+
+                // Eliminar la flor después de que termine la animación para no sobrecargar el DOM
+                flower.addEventListener('animationend', () => {
+                    flower.remove();
+                });
+            }
+        }
+    </script>
+</body>
+</html>
